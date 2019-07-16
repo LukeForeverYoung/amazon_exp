@@ -58,9 +58,14 @@ def read_rating():
         return pickle.load(f)
 
 
-
-
-
+from quality_aware.torch_version.Network import Net
+from torch import Tensor
+import torch
+a=torch.zeros((10,15))
+b=torch.zeros((10,11))
+c=torch.cat((a,b),dim=1)
+print(c.shape)
+input()
 asin_set=read_asin_set()
 print(len(asin_set))
 visual_asin=read_visual(asin_set)

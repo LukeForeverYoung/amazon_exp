@@ -131,7 +131,7 @@ def main():
                     if asin == '': break
                     a = array.array('f')
                     a.fromfile(f, 4096)
-                    if asin not in asin_set:
+                    if asin.decode('utf-8') not in asin_set:
                         continue
                     feature=np.asarray(a.tolist())
                     feature=feature.reshape((feature.shape[0],1))
@@ -171,7 +171,8 @@ def main():
         with open("datakeys.pickle") as f:
             SubTraingKeys, Testkeys = pickle.load(f)
         '''
-
+        print(len(imagefeature))
+        input()
 
         #sess = tf.InteractiveSession()
         tf.global_variables_initializer().run()
