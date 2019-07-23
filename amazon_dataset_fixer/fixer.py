@@ -75,6 +75,10 @@ def read_rating():
     with open(join(root, 'item_rating.pickle'), 'rb') as f:
         return pickle.load(f).keys()
 
+def read_category():
+    with open(join(root, 'item_category.pickle'), 'rb') as f:
+        return pickle.load(f).keys()
+
 if __name__=='__main__':
     '''
         需要先使用某种方法获得visual/text feature和rating
@@ -82,8 +86,9 @@ if __name__=='__main__':
     visual_available = read_visual()
     text_available = read_text()
     rating_available = read_rating()
+    category_available = read_category()
     # len 277271
-    data_available = visual_available & text_available & rating_available
+    data_available = visual_available & text_available & rating_available & category_available
     with open(join(root, 'available_asin_set.pickle'), 'wb')as f:
         pickle.dump(data_available, f)
     '''

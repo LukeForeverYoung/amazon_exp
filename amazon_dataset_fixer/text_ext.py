@@ -7,7 +7,7 @@ import numpy as np
 from collections import defaultdict
 import nltk
 import ujson as json
-from nltk import word_tokenize, porter, sent_tokenize
+from nltk import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
