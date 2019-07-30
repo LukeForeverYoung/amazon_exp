@@ -2,6 +2,8 @@
   <dictionary name="mizuk">
     <words>
       <w>asin</w>
+      <w>dataset</w>
+      <w>gensim</w>
     </words>
   </dictionary>
 </component>

@@ -104,15 +104,15 @@ def dfs(now_node,tab,item_vec_array,path_vec,need_print=True):
     return leaf_sum
 
 if __name__=='__main__':
-    '''
+
     with open(join(root, 'item_category_vector.pickle'), 'rb') as f:
         tmp=pickle.load(f)
-        k_l=sample(tmp.keys(),100)
+        ss=set()
+        for k in tmp:
+            ss.add(tmp[k].shape)
+        print(len(ss))
+        input()
 
-        for key in k_l:
-            print(tmp[key])
-            input()
-    '''
     with open('category_tree','rb') as f:
         root_node=pickle.load(f)
         root_node=split_tree(root_node)[0]

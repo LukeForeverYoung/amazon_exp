@@ -1,49 +1,47 @@
-import pickle
-from collections import defaultdict
-from os.path import join
-#import ujson as json
-from gensim.models import KeyedVectors
-from gensim.utils import SaveLoad
-from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer
-from nltk import tokenize
-from random import sample
-from pattern3.text import singularize
-from category_exp.category_tree_defination import Node,category_fix
-import re
-from category_exp.merge_split_category import similarity
+from random import randint, randrange
 
-#model=KeyedVectors.load(join('F:/','word2vec.840B.300d.bin'),mmap='r')
-from category_exp.word2vec_util import word_in, get_vector
+from math import exp, log
 
-'''
-def checker(str):
-    if str in model.wv.vocab:
-        print(str,'yes')
-        return True
-    else:
-        print(str,'no')
-    if str.lower() in model.wv.vocab:
-        print(str.lower(),'yes')
-        return True
-    else:
-        print(str.lower(), 'no')
-    if singularize(str) in model.wv.vocab:
-        print(singularize(str), 'yes')
-        return True
-    else:
-        print(singularize(str), 'no')
+from quality_aware.torch_version.Data import envolu_data_sample
 
-    str=re.split('[^a-zA-Z0-9]',str)
-    if len(str):
-        res=[checker(s) for s in str]
-        print(any(res))
-        return any(res)
-'''
-import numpy as np
-print('start:')
-print(get_vector('apple'))
-print(type(np.asarray(get_vector('apple'))))
-while True:
-    tmpa=input()
-    print(get_vector('apple'))
+
+def randabs():
+    return randint(1,10)
+
+def lg(p):
+    return log(1+exp(p))
+
+def cal(p,t):
+    loss = 0
+    if t == 1:
+        loss += p
+    loss -= lg(p)
+    return loss
+
+def step(p,t):
+    tmp=randrange(0,10)
+    if tmp >=p:
+        f=1
+    else:
+        f=-1
+    p=f*randabs()
+
+    return cal(p,t),p
+envolu_data_sample(None)
+input()
+num=6
+w=5
+print('TT','\t'*num,'FT','\t'*num,'TF','\t'*num,'FF')
+print(cal(w,1),'\t',cal(-w,1),'\t',cal(w,0),'\t',cal(-w,0))
+gt=[1 if randrange(0,10)>=2 else  0for i in range(1000)]
+
+for x in range(10):
+    loss = 0
+    m = 0
+    for i,label in enumerate(gt):
+        r1,r2=step(x,label)
+        loss+=r1
+        m+=r2
+    print(loss,m/len(gt))
+
+

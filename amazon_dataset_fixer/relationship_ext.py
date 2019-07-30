@@ -20,31 +20,55 @@ def ext_relationship(meta_data, asin_set, save=False):
     '''
     relationship={}
     also_bought_dic={}
-    bought_toghter_dic={}
+    bought_together_dic={}
+    also_viewed_dic={}
+    buy_after_viewing_dic={}
+    substitutes=[]
+    compliments=[]
     for item in meta_data:
         if item['asin'] not in asin_set:
             continue
         relate=item['related']
         also_bought=[]
         bought_together=[]
+        also_viewed = []
+        buy_after_viewing = []
         if 'also_bought' in relate:
+            compliments.extend([(item['asin'], r_item) for r_item in relate['also_bought'] if r_item in asin_set])
             also_bought.extend([r_item for r_item in relate['also_bought'] if r_item in asin_set])
         if 'bought_together' in relate:
+            compliments.extend([(item['asin'], r_item) for r_item in relate['bought_together'] if r_item in asin_set])
             bought_together.extend([r_item for r_item in relate['bought_together'] if r_item in asin_set])
+        if 'also_viewed' in relate:
+            substitutes.extend([(item['asin'],r_item) for r_item in relate['also_viewed'] if r_item in asin_set])
+            also_viewed.extend([r_item for r_item in relate['also_viewed'] if r_item in asin_set])
+        if 'buy_after_viewing' in relate:
+            substitutes.extend([(item['asin'], r_item) for r_item in relate['buy_after_viewing'] if r_item in asin_set])
+            buy_after_viewing.extend([r_item for r_item in relate['buy_after_viewing'] if r_item in asin_set])
         if len(also_bought)!=0:
             also_bought_dic[item['asin']]=set(also_bought)
         if len(bought_together)!=0:
-            bought_toghter_dic[item['asin']]=set(bought_together)
+            bought_together_dic[item['asin']]=set(bought_together)
+        if len(also_viewed)!=0:
+            also_viewed_dic[item['asin']]=set(also_viewed)
+        if len(buy_after_viewing)!=0:
+            buy_after_viewing_dic[item['asin']]=set(buy_after_viewing)
     relationship['also_bought']=also_bought_dic
-    relationship['bought_together']=bought_toghter_dic
+    relationship['bought_together']=bought_together_dic
+    relationship['also_viewed']=also_viewed_dic
+    relationship['buy_after_viewing']=buy_after_viewing_dic
     if save:
         with open(join(root,'item_relation.pickle'),'wb') as f:
             pickle.dump(relationship, f)
+        with open(join(root,'substitutes.pickle'),'wb') as f:
+            pickle.dump(substitutes,f)
+        with open(join(root,'compliments.pickle'),'wb')as f:
+            pickle.dump(compliments,f)
     return relationship
 
 
 def read_available_asin():
-    with open(join(root, 'avaliable_asin_set.pickle'), 'rb')as f:
+    with open(join(root, 'available_asin_set.pickle'), 'rb')as f:
         return pickle.load(f)
 
 
