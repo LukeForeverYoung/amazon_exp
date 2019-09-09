@@ -49,7 +49,7 @@ def read_visual():
             a = array.array('f')
             a.fromfile(f, 4096)
             yield {'asin': asin}
-    img_path = join('F://', 'FDMDownload', 'image_features_Electronics.b')
+    img_path = join(root, 'image_features_Electronics.b')
     it = readImageFeatures(img_path)
     visual_asin=[]
     try:
@@ -87,8 +87,15 @@ if __name__=='__main__':
     text_available = read_text()
     rating_available = read_rating()
     category_available = read_category()
+    print(len(visual_available))
+    print(len(text_available))
+    print(len(rating_available))
+    print(len(category_available))
     # len 277271
     data_available = visual_available & text_available & rating_available & category_available
+    print(len(data_available))
+    print('B00KPYMOL4' in data_available)
+    print('B00KPYMOL4' in text_available)
     with open(join(root, 'available_asin_set.pickle'), 'wb')as f:
         pickle.dump(data_available, f)
     '''

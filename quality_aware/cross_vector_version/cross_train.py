@@ -1,7 +1,7 @@
 '''
     pytorch version of products
 '''
-
+from quality_aware.cross_vector_version.Network import CrossVector
 
 
 def parase_args():
@@ -45,7 +45,7 @@ from quality_aware.torch_version.Data import ExtDataset, collate_fn, collate_wit
     make_train_sample, envolu_data_sample
 
 root = join('F://', 'Amazon Dataset', 'Electronics')
-
+model_path=join(root, 'Model', 'Cross')
 
 if __name__ == '__main__':
     args = parase_args()
@@ -53,7 +53,7 @@ if __name__ == '__main__':
     # 调参
     args.batchsize=16
     args.learningrate=0.001
-
+    args.category=True
     asin_set = read_data_available()
     if args.category:
         category_feature = read_category_vec()
@@ -77,24 +77,23 @@ if __name__ == '__main__':
 
     # 训练部分
 
-    net = Net_BN_category() if (args.category) else Net_bayes()
-
+    net = CrossVector()
     net.cuda()
     optimizer = torch.optim.RMSprop(params=net.parameters(), lr=args.learningrate)
 
 
     train_dataset = ExtDataset(train_list, text_feature, visual_feature, rating,category=category_feature)
     train_dataloader = DataLoader.DataLoader(train_dataset, batch_size=args.batchsize, shuffle=True,pin_memory=True,
-                                       collate_fn=(collate_with_cat_fn if (args.category) else collate_fn))
+                                       collate_fn=collate_with_cat_fn )
 
     valid_dataset = ExtDataset(valid_list,text_feature, visual_feature, rating,category_feature)
     valid_dataloader = DataLoader.DataLoader(valid_dataset, batch_size=args.batchsize, shuffle=False,
-                                       collate_fn=(collate_with_cat_fn if (args.category) else collate_fn))
+                                       collate_fn=collate_with_cat_fn)
 
 
     test_dataset = ExtDataset(test_list, text_feature, visual_feature, rating,category_feature)
     test_dataloader = DataLoader.DataLoader(test_dataset, batch_size=args.batchsize, shuffle=False,
-                                             collate_fn=(collate_with_cat_fn if (args.category) else collate_fn))
+                                             collate_fn=collate_with_cat_fn)
     ep=0
     pre_acc=0
     useless=0
@@ -126,10 +125,7 @@ if __name__ == '__main__':
             positive+=all_pos
             acc_list.extend(acc_res)
 
-            if args.category:
-                label = item[7]
-            else:
-                label = item[5]
+            label = item[7]
             print(label.shape)
             rand_acc_list.extend([randint(0,1) == label[j] for j in range(len(label))])
         acc_rate = np.mean(acc_list)
@@ -138,7 +134,7 @@ if __name__ == '__main__':
               'random acc:{:.2f}%'.format(np.mean(rand_acc_list)))
         if acc_rate>pre_acc:
             best_ep=ep
-            torch.save(net.state_dict(),join(root,'ep_{0}.torch'.format(ep)))
+            torch.save(net.state_dict(),join(model_path,'ep_{0}.torch'.format(ep)))
             useless=0
             pre_acc=acc_rate
         else:
@@ -146,14 +142,9 @@ if __name__ == '__main__':
         if useless>=15:
             break
         ep += 1
-    best_model=torch.load(join(root,'ep_{0}.torch'.format(best_ep)))
+    best_model=torch.load(join(model_path, 'ep_{0}.torch'.format(best_ep)))
     net.load_state_dict(best_model)
-
-
-    if args.category:
-        torch.save(best_model, join(root, 'best_model_cat.torch'))
-    else:
-        torch.save(best_model,join(root,'best_model.torch'))
+    torch.save(best_model, join(model_path, 'best_model_cat.torch'))
     net = Net_BN_category() if (args.category) else Net_bayes()
     net.eval()
     net.cuda()
@@ -161,7 +152,7 @@ if __name__ == '__main__':
 
     # 计算准确率
     dataset = ExtDataset(list(test_set), text_feature, visual_feature, rating,category_feature)
-    dataloader = DataLoader.DataLoader(dataset, batch_size=args.batchsize, shuffle=False, collate_fn=(collate_with_cat_fn if(args.category) else collate_fn))
+    dataloader = DataLoader.DataLoader(dataset, batch_size=args.batchsize, shuffle=False, collate_fn=collate_with_cat_fn)
     print('test step')
     acc_list = []
     predict_positive = 0

@@ -80,6 +80,7 @@ def read_meta():
 
 meta_data=read_meta()
 asin_set=read_available_asin()
+
 relationship=ext_relationship(meta_data, asin_set, save=True)
 
 print(relationship.keys())

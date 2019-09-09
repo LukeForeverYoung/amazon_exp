@@ -57,7 +57,6 @@ def reader():
             if not tmp:
                 break
             tmp=eval(tmp)
-
             if 'categories' in tmp:
                 for cat_seq in tmp['categories']:
                     # make category tree

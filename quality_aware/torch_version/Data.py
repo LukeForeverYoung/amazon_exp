@@ -97,7 +97,7 @@ def make_train_sample(relationship, asin_set, num=33000):
             if p == len(asin_list):
                 shuffle(asin_list)
                 p = 0
-            if target in relationship[item]:
+            if target in relationship[item] or target not in asin_set:
                 continue
             else:
                 tmp_list.append((item, target, 0))
@@ -113,7 +113,7 @@ def make_train_sample(relationship, asin_set, num=33000):
             if p == len(asin_list):
                 shuffle(asin_list)
                 p = 0
-            if target in relationship[item] and (item, target, 0) not in train_set:
+            if (target in relationship[item] and (item, target, 0) not in train_set) or target not in asin_set:
                 continue
             else:
                 tmp_list.append((item, target, 0))
@@ -229,7 +229,7 @@ def read_visual(key_set):
             # feature=np.zeros((1,4096))
             yield {'asin': asin, 'feature': feature}
 
-    img_path = join('E:/', 'Machine Learning Data Temp', 'image_features_Electronics.b')
+    img_path = join('E:/', 'Machine Learning Data Temp','Electronics', 'image_features_Electronics.b')
     it = readImageFeatures(img_path)
     # debug
     # it=[{'asin': asin.encode('utf-8'), 'feature':np.zeros((1,4096)) }for asin in asin_set]

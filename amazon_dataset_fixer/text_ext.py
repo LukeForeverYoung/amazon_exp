@@ -15,9 +15,9 @@ import html
 import pickle
 def read_meta():
     root = join('F://', 'Amazon Dataset', 'Electronics')
-    filename = 'fixed_meta_Electronics.json'
-    with open(join(root, filename), 'r') as f:
-        data=json.load(f)
+    filename = 'fixed_meta_Electronics.pickle'
+    with open(join(root, filename), 'rb') as f:
+        data=pickle.load(f)
     return data
 
 def sort_with_asin(data):
@@ -26,14 +26,13 @@ def sort_with_asin(data):
         n_d[item['asin']].append(item)
     return n_d
 
-def preprocess(title,description):
+def preprocess(sents):
     stop_words = set(stopwords.words('english'))
     stemmer=PorterStemmer()
     #在词的过滤部分,html标记语法会被过滤掉
     #title=html.unescape(html.unescape(title))
     #description=html.unescape(html.unescape(description))
-    sents=[title]
-    sents.extend(sent_tokenize(description))
+
     n_sents=[]
     for sent in sents:
         #print(sent)
@@ -46,14 +45,21 @@ def preprocess(title,description):
 if __name__=='__main__':
     print(nltk.__version__)
     model = Doc2Vec(window=20, vector_size=100, workers=6)
-    data=read_meta()
+    data=[tmp for tmp in read_meta() if 'title' in tmp or 'description' in tmp]
     data_size=len(data)
     print(data_size)
     documents=[]
     for i,prod in enumerate(data):
         #print('title:',prod['title'])
         #print('desc:',prod['description'])
-        words=preprocess(prod['title'],prod['description'])
+        sents = []
+        if 'title' in prod:
+            sents.extend(sent_tokenize(prod['title']))
+        if 'description' in prod:
+            sents.extend(sent_tokenize(prod['description']))
+        if len(sents)==0:
+            continue
+        words=preprocess(sents)
         documents.append(TaggedDocument(words, [i]))
         print(i,'/',data_size)
     model.build_vocab(documents)

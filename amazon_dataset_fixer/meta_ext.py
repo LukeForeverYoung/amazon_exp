@@ -12,7 +12,7 @@ root = join('F://', 'Amazon Dataset', 'Electronics')
 def reader():
     root=join('F://','Amazon Dataset','Electronics')
     filename='meta_Electronics.json'
-    out_filename='fixed_meta_Electronics.json'
+    out_filename='fixed_meta_Electronics.pickle'
     obj_list=[]
     asin_list=[]
     with open(join(root,filename),'r') as f:
@@ -21,25 +21,13 @@ def reader():
             tmp=f.readline()
             if not tmp:
                 break
-            try:
-                tmp=eval(tmp)
-            except Exception as e:
-                print(e)
-                err+=1
-                continue
-            if 'imUrl' in tmp and 'title' in tmp and 'description' in tmp and 'related' in tmp:
-                n_obj = {}
-                n_obj['asin']=tmp['asin']
-                n_obj['imUrl'] = tmp['imUrl']
-                n_obj['title'] = tmp['title']
-                n_obj['description'] = tmp['description']
-                n_obj['related'] = tmp['related']
-                obj_list.append(n_obj)
-                asin_list.append(n_obj['asin'])
+            tmp=eval(tmp)
+            obj_list.append(tmp)
+            asin_list.append(tmp['asin'])
         print(err)
-
-    with open(join(root,out_filename),'w') as f:
-        json.dump(obj_list,f)
+    print(len(obj_list))
+    with open(join(root,out_filename),'wb') as f:
+        pickle.dump(obj_list,f)
     with open(join(root, 'asin_list_Electronics.pickle'), 'wb') as f:
         pickle.dump(set(asin_list), f)
 
